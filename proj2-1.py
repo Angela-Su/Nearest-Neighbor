@@ -73,7 +73,7 @@ def ForwardSelection(data, numInstances, numFeatures):
         for j in range(1, numFeatures + 1):
             if(j not in searchFeats):
                 temp = copy.deepcopy(searchFeats)
-                temp.append(j)
+                temp.append(j) #add to the subset and check the accuracy
 
                 acc = leaveOne(data, temp, numInstances)
                 print("Using feature(s)", temp, " accuracy is ", acc, "%")
@@ -97,8 +97,44 @@ def ForwardSelection(data, numInstances, numFeatures):
 
 #reference
 #https://www.analyticsvidhya.com/blog/2020/10/a-comprehensive-guide-to-feature-selection-using-wrapper-methods-in-python/
-def BackwardElim(data, numInstances, numFeatures):
-    print("back elim")
+def BackwardElim(data, numInstances, numFeatures, accuracy):
+    #print("back elim")
+    #a twist on forward select, kinda like the opposite, lol backwards
+    #elim starting from full set of data
+    #greatest acc with one feature remove, continue, repeat until no more features, pray
+    bestAcc = accuracy
+    searchFeats = [i + 1 for i in range(numFeatures)]  #starts with all features
+    total = [i + 1 for i in range(numFeatures)] 
+
+    #loop through features 2^k + 1
+    for i in range(numFeatures):
+        removeFeature = -1
+        localRemoveFeat = -1
+        tempAcc = 0.0
+        for j in range(1, numFeatures + 1):
+            if(j in searchFeats):
+                temp = copy.deepcopy(searchFeats)
+                temp.remove(j) #remove from the subset and check the accuracy
+
+                acc = leaveOne(data, temp, numInstances)
+                print("Using feature(s)", temp, " accuracy is ", acc, "%\n")
+                if(acc > bestAcc):
+                    bestAcc = acc
+                    removeFeature = j
+                if(acc > tempAcc):
+                    tempAcc = acc
+                    localRemoveFeat = j
+
+        if(removeFeature > -1):
+            searchFeats.remove(removeFeature)
+            total.remove(removeFeature)
+            print("Feature set ", searchFeats, " was best, accuracy is ", bestAcc, "%\n")
+        else:
+            print("(Warning, Accuracy has decreased! Continuing search in case of local maxima)\n")
+            searchFeats.remove(localRemoveFeat)
+            print("Feature set ", searchFeats, " was best, accuracy is ", tempAcc, "%\n")
+
+    print("Finished search!! The best feature subset is ", total, ", which has an accuracy of ", bestAcc, "%\n")
 
 def Angela():
     print("special")
@@ -154,7 +190,7 @@ def main():
     if(userAlg == "1"):
         ForwardSelection(data, numInstances, numFeatures)
     elif(userAlg == "2"):
-        BackwardElim(data, numInstances, numFeatures)
+        BackwardElim(data, numInstances, numFeatures, accuracy)
     else:
         Angela()
 
