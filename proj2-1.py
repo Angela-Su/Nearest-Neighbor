@@ -1,21 +1,34 @@
 import math
 import copy
 
-ForwardSelection():
-    print("")
+def ForwardSelection():
+    print("forward select")
 
-BackwardElim():
+def BackwardElim():
+    print("back elim")
 
-Angela():
-
+def Angela():
+    print("special")
 
 def main():
     print ("Welcome to Angela Su\'s Feature Selection Algorithm.")
-    # inputFile = input('What is file you want to use?') # read in data
+    inputFile = input("Type in the name of the file to test : ") # read in data
 
+    #open the file and read from it
+    #https://www.w3schools.com/python/python_file_open.asp
+    f = open(inputFile, "r")
+    data = f.readline()
+    numFeatures = len(data.split()) - 1
+
+    #need to read all lines starting at the beginning of file
+    f.seek(0)
+    numInstances = sum(1 for line in f)
+    f.seek(0)
+    instances = [[] for i in range(numInstances)]
+    for i in range(numInstances): #might have problems with the iterator
+        instances[i] = [float(j) for j in f.readline().split()]
+    
     #OKAY ANGELA YOU JUST NEED TO USE YOUR BRAIN!!!
-    #print ("Please enter total number of features:")
-    numFeatures = int(input("Please enter total number of features:"))
 
     #change it so that get user input while asking for what algorithm to run
     #print ("Type the number of the algorthim you want to run.")
@@ -31,7 +44,8 @@ def main():
                         2) Backward Elimination
                         3) Angela Special Algorithm. \n""")
     
-    print("Beginning search.")
+    #print("Beginning search.")
+    print("This dataset has %d features with %d instances." %(numFeatures, numInstances))
 
     if(userAlg == "1"):
         ForwardSelection()
