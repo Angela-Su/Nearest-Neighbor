@@ -1,10 +1,33 @@
 import math
 import copy
 
-def ForwardSelection():
+def normalize(instances, numInstances, numFeatures): #instances is the main data
+    #x = (x-ave(x))/std(x)
+    #normalized[i][j]
+
+    #find the average, store in array
+    ave = []
+    for i in range(1, numFeatures + 1):
+        ave.append((sum(row[i] for row in instances)) / numInstances)
+
+    #find std, store in array
+    std = []
+    for i in range(1, numFeatures + 1):
+        x = ((row[i] - ave[i-1]) for row in instances) #might have problem here
+        difference = sum(x * x) / numInstances
+        std.append(math.sqrt(difference))
+
+    #return modified data
+    for i in range(0, numInstances):
+        for j in range(1, numFeatures + 1):
+            instances[i][j] = (instances[i][j] - ave[j-1]) / std[j-1]
+    
+    return instances
+
+def ForwardSelection(data, numInstances, numFeatures):
     print("forward select")
 
-def BackwardElim():
+def BackwardElim(data, numInstances, numFeatures):
     print("back elim")
 
 def Angela():
@@ -46,11 +69,14 @@ def main():
     
     #print("Beginning search.")
     print("This dataset has %d features with %d instances." %(numFeatures, numInstances))
+    print("Please wait while I normalize the data... DONE!\n") #normalize the data!!!
+
+    normal = normalize(instances, numInstances, numFeatures)
 
     if(userAlg == "1"):
-        ForwardSelection()
+        ForwardSelection(data, numInstances, numFeatures)
     elif(userAlg == "2"):
-        BackwardElim()
+        BackwardElim(data, numInstances, numFeatures)
     else:
         Angela()
 
