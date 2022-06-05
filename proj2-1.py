@@ -55,9 +55,48 @@ def leaveOne(data, totalFeats, numInstances): #normal, totalFeats, numInstances
     
     return ((tempAcc / numInstances) * 100)
 
+#reference
+#https://www.analyticsvidhya.com/blog/2021/04/forward-feature-selection-and-its-implementation/
 def ForwardSelection(data, numInstances, numFeatures):
-    print("forward select")
+    #print("forward select")
+    #check the features, calculate accurary(acc), store best acc, pray it works
+    #wanna use the pylib deepcopy so nothing is lost
+    bestAcc = 0.0
+    searchFeats = [] 
+    total = [] 
 
+    #loop through features 2^k + 1
+    for i in range(numFeatures):
+        addFeature = -1
+        localAddFeat = -1
+        tempAcc = 0.0
+        for j in range(1, numFeatures + 1):
+            if(j not in searchFeats):
+                temp = copy.deepcopy(searchFeats)
+                temp.append(j)
+
+                acc = leaveOne(data, temp, numInstances)
+                print("Using feature(s)", temp, " accuracy is ", acc, "%")
+                if(acc > bestAcc):
+                    bestAcc = acc
+                    addFeature = j
+                if(acc > tempAcc):
+                    tempAcc = acc
+                    localAddFeat = j
+
+        if(addFeature > -1):
+            searchFeats.append(addFeature)
+            total.append(addFeature)
+            print("\n Feature set ", searchFeats, " was best, accuracy is ", bestAcc, "%\n")
+        else:
+            print("(Warning, Accuracy has decreased! Continuing search in case of local maxima)\n")
+            searchFeats.append(localAddFeat)
+            print("\n Feature set ", searchFeats, " was best, accuracy is ", tempAcc, "%\n")
+
+    print("Finished search!! The best feature subset is ", total, ", which has an accuracy of ", bestAcc, "%\n")
+
+#reference
+#https://www.analyticsvidhya.com/blog/2020/10/a-comprehensive-guide-to-feature-selection-using-wrapper-methods-in-python/
 def BackwardElim(data, numInstances, numFeatures):
     print("back elim")
 
