@@ -24,6 +24,37 @@ def normalize(instances, numInstances, numFeatures): #instances is the main data
     
     return instances
 
+def NearestNeighbor(instances, numInstances, outOne, feats):
+    NN = 0
+    NNdist = float('inf') #set to infinity
+    numFeatures = len(feats)
+    for i in range(0, numInstances):
+        if(i == outOne):
+            pass
+        else:
+            dist = 0
+            for j in range(0, numFeatures):
+                x = instances[i][feats[j]] - instances[outOne][feats[j]]
+                xSquare = x * x
+                dist = dist + xSquare
+            dist = math.sqrt(dist)
+            if(dist < NNdist):
+                NNdist = dist
+                NN = i
+
+    return NN
+
+def leaveOne(data, totalFeats, numInstances): #normal, totalFeats, numInstances
+    #returns accuracy 
+    tempAcc = 0.0
+    for i in range(numInstances):
+        outOne = i
+        NN = NearestNeighbor(data, numInstances, outOne, totalFeats)
+        if (data[NN][0] == data[outOne][0]) :
+            tempAcc = tempAcc + 1
+    
+    return ((tempAcc / numInstances) * 100)
+
 def ForwardSelection(data, numInstances, numFeatures):
     print("forward select")
 
@@ -72,7 +103,15 @@ def main():
     print("Please wait while I normalize the data... DONE!\n") #normalize the data!!!
 
     normal = normalize(instances, numInstances, numFeatures)
+    totalFeats = []
+    for i in range(1, numFeatures + 1):
+        totalFeats.append(i)
 
+    print("Running nearest neighbor with ", numFeatures, " features, using \'leaving-one-out\' evaluation, ")
+    accuracy = leaveOne(normal, totalFeats, numInstances)
+    print("I get an accuracy of ", accuracy, "%.")
+
+    print("Beginning search. \n")
     if(userAlg == "1"):
         ForwardSelection(data, numInstances, numFeatures)
     elif(userAlg == "2"):
