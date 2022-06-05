@@ -13,8 +13,10 @@ def normalize(instances, numInstances, numFeatures): #instances is the main data
     #find std, store in array
     std = []
     for i in range(1, numFeatures + 1):
-        x = ((row[i] - ave[i-1]) for row in instances) #might have problem here
-        difference = sum(x * x) / numInstances
+        #x = ((row[i] - ave[i-1]) for row in instances) #might have problem here
+        #xSquared = x * x
+        #difference = sum(xSquared) / numInstances
+        difference = sum(pow((row[i] - ave[i-1]), 2) for row in instances) / numInstances
         std.append(math.sqrt(difference))
 
     #return modified data
@@ -25,7 +27,7 @@ def normalize(instances, numInstances, numFeatures): #instances is the main data
     return instances
 
 def NearestNeighbor(instances, numInstances, outOne, feats):
-    NN = 0
+    NN = -1
     NNdist = float('inf') #set to infinity
     numFeatures = len(feats)
     for i in range(0, numInstances):
@@ -34,9 +36,10 @@ def NearestNeighbor(instances, numInstances, outOne, feats):
         else:
             dist = 0
             for j in range(0, numFeatures):
-                x = instances[i][feats[j]] - instances[outOne][feats[j]]
-                xSquare = x * x
-                dist = dist + xSquare
+                #x = instances[i][feats[j]] - instances[outOne][feats[j]] #might have problems here
+                #xSquare = x * x
+                #dist = dist + xSquare
+                dist = dist + pow((instances[i][feats[j]] - instances[outOne][feats[j]]), 2)
             dist = math.sqrt(dist)
             if(dist < NNdist):
                 NNdist = dist
@@ -146,11 +149,10 @@ def main():
     #open the file and read from it
     #https://www.w3schools.com/python/python_file_open.asp
     f = open(inputFile, "r")
-    data = f.readline()
-    numFeatures = len(data.split()) - 1
+    numFeatures = len(f.readline().split()) - 1
 
     #need to read all lines starting at the beginning of file
-    f.seek(0)
+    f.seek(0) #moves curser to start of file
     numInstances = sum(1 for line in f)
     f.seek(0)
     instances = [[] for i in range(numInstances)]
@@ -188,9 +190,9 @@ def main():
 
     print("Beginning search. \n")
     if(userAlg == "1"):
-        ForwardSelection(data, numInstances, numFeatures)
+        ForwardSelection(normal, numInstances, numFeatures) #NEED TO USE NORMALIZED DATA!!!
     elif(userAlg == "2"):
-        BackwardElim(data, numInstances, numFeatures, accuracy)
+        BackwardElim(normal, numInstances, numFeatures, accuracy) #NEED TO USE NORMALIZED DATA!!!
     else:
         Angela()
 
